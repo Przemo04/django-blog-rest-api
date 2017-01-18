@@ -26,8 +26,12 @@ SECRET_KEY = ')*jg6&za!rsi)g#kxdru@4c-+f@ffy)^&&0p0hx5-=v5do*eo@'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:8000/api/news/'
+    '127.0.0.1:8000/api/'
+)
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,7 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'news',
+    #'news',
+    'rest_framework',
+    'news.apps.NewsConfig',
+    'slider.apps.SliderConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'appdjango.urls'
@@ -120,3 +130,47 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'public', 'static')
+MEDIA_URL = '/api/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'appdjango', 'media_cdn')
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+	],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ],
+
+    # 'DEFAULT_PARSER_CLASSES': [
+    #     'rest_framework_xml.parsers.XMLParser',
+    # ],
+	'DEFAULT_RENDERER_CLASSES': [
+		'rest_framework.renderers.JSONRenderer',
+		'rest_framework.renderers.BrowsableAPIRenderer',
+		'rest_framework_xml.renderers.XMLRenderer',
+	 ]
+
+    # 'DEFAULT_PARSER_CLASSES': [
+    #     'rest_framework_xml.parsers.XMLParser',
+    # ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework_xml.renderers.XMLRenderer',
+    # ],
+	# 'DEFAULT_RENDERER_CLASSES': [
+	# 	'rest_framework.renderers.JSONRenderer',
+	# 	'rest_framework.renderers.BrowsableAPIRenderer',
+	# ]
+}
+
+'''
+curl -X POST -d "username=project@project.pl&password=Qwertyuiop123" http://127.0.0.1:8000/api/news/api-token-auth/
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2plY3RAcHJvamVjdC5wbCIsInVzZXJfaWQiOjcsImV4cCI6MTQ4NDcyOTAwNywiZW1haWwiOiJwcm9qZWN0QHByb2plY3QucGwifQ.0Uz71rH6JHVq4dvqi_p8MfFX2Hk9CFSyFOT8nHF_qNo
+
+curl -H "Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InByb2plY3RAcHJvamVjdC5wbCIsInVzZXJfaWQiOjcsImV4cCI6MTQ4NDcyOTAwNywiZW1haWwiOiJwcm9qZWN0QHByb2plY3QucGwifQ.0Uz71rH6JHVq4dvqi_p8MfFX2Hk9CFSyFOT8nHF_qNo" http://127.0.0.1:8000/api/news/api-token-auth/
+
+'''
